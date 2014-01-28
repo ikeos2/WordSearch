@@ -44,14 +44,22 @@ int main(){
        //printf("%d: %s\n",i,Words[i]); //debug
        i++;      
  }
- i = numWords;
- i=0; //reset the global counter to 0
+ numWords = i;
+ printf("numWords: %d\n", numWords);
+ i = 0; //reset the global counter to 0
  //fill field with blanks
  for(i=0;i<dem1;i++){
         for(j=0;j<dem2;j++){
             field[i][j] = ' ';
         }                    
  }
+ 
+ //strip off return characters
+ int lenss; //temp storage, ignore this!
+ for(i=0;i<numWords;i++){
+ 	Words[i][strlen(Words[i])-1] = '\0';
+ }
+ 
  
  //insert words
  int WordLen;//temp storage for how long words are for fittings checks
@@ -63,11 +71,12 @@ int main(){
    restart: //incase we found a position that didn't work, restart the loop with out changing words
 	
 	//Give me some random numbers for my wordsearch!
-	LocX = rand()%(dem1+1);
+	LocX = rand()% dem1 + 1;
 	Sleep(50); //allow for time to pass since the numbers are based on time
-	LocY = rand()%(dem2+1);
+	LocY = rand()% dem2 + 1;
 	
    WordLen = strlen(Words[i]); //figure out how long each word is
+   printf("%s Len: %d\n", Words[i], WordLen);
  	
    if(orientation == 0){ //horizontal
         if(direction == 0){ //forward 
@@ -77,7 +86,7 @@ int main(){
                 
                 if(count-1 == WordLen){ //does the planned spot for the word work? compare counted spaces to expected
 	    			//place the word on the field
-	    			for(i=0;i<WordLen;i++){
+	    			for(j=0;j<WordLen;j++){
 	    				field[LocX+i][LocY] = Words[i][j];
 	    			}
 	    		}
@@ -85,6 +94,17 @@ int main(){
             }
         }
         else{ //backwards
+  			//check to see if the word fits going this direction
+    		if(LocX + WordLen < dem1){ //does the word fit in the array?
+                for(j=0;j<WordLen;j++){ if(field[LocX-j][LocY] == ' ' || field[LocX+j][LocY] == Words[i][j]) count++; } //count the number of available spaces
+                
+                if(count-1 == WordLen){ //does the planned spot for the word work? compare counted spaces to expected
+	    			//place the word on the field
+	    			for(j=0;j<WordLen;j++){
+	    				field[LocX-i][LocY] = Words[i][j];
+	    			}
+	    		}
+	    		else{ goto restart; }
         }
    }
    if(orientation == 1){ //vertical
@@ -100,13 +120,35 @@ int main(){
    }     
  }
  
+ //output key
+ printf("\n\nKey:\n");
+ for(i=0;i<dem1;i++){
+ 	for(j=0;j<dem2;j++){
+ 		printf("%c ",field[i][j]);
+ 	}
+ 	printf("\n");
+ }
+ 
  
  //fill the rest of the field with random letters
+ char randomized;
  
- //output key and puzzle
+ for(i=0;i<dem1;i++){
+ 	for(j=0;j<dem2;j++){
+ 		randomized = 'A' + rand() % 26;
+ 		if(field[i][j] == ' ') field[i][j] = randomized;
+ 	}
+ }
+ //output puzzle
+ printf("\n\nPuzzle:\n");
+ for(i=0;i<dem1;i++){
+ 	for(j=0;j<dem2;j++){
+ 		printf("%c ",field[i][j]);
+ 	}
+ 	printf("\n");
+ }
  
  printf("End of program\n");
- system("Pause");
  //house keeping
  free(line);
  free(input);
