@@ -69,7 +69,7 @@ int main(){
  
  for(i = 0;i<numWords;i++){ //cycle through each word
    restart: //incase we found a position that didn't work, restart the loop with out changing words
-	
+	count = 0; //reset counter
 	//Give me some random numbers for my wordsearch!
 	LocX = rand()% dem1 + 1;
 	Sleep(50); //allow for time to pass since the numbers are based on time
@@ -84,13 +84,17 @@ int main(){
     		if(LocX + WordLen < dem1){ //does the word fit in the array?
                 for(j=0;j<WordLen;j++){ if(field[LocX+j][LocY] == ' ' || field[LocX+j][LocY] == Words[i][j]) count++; } //count the number of available spaces
                 
-                if(count-1 == WordLen){ //does the planned spot for the word work? compare counted spaces to expected
+                if(count == WordLen){ //does the planned spot for the word work? compare counted spaces to expected
 	    			//place the word on the field
 	    			for(j=0;j<WordLen;j++){
-	    				field[LocX+i][LocY] = Words[i][j];
+	    				field[LocX+j][LocY] = Words[i][j];
+	    				printf("Word placed\n");
 	    			}
 	    		}
-	    		else{ goto restart; }
+	    		else{ //if the word wont fit, reset count and move on.
+                      count = 0;
+                      goto restart; 
+                    }
             }
         }
         else{ //backwards
@@ -101,7 +105,7 @@ int main(){
                 if(count-1 == WordLen){ //does the planned spot for the word work? compare counted spaces to expected
 	    			//place the word on the field
 	    			for(j=0;j<WordLen;j++){
-	    				field[LocX-i][LocY] = Words[i][j];
+	    				field[LocX-j][LocY] = Words[i][j];
 	    			}
 	    		}
 	    		else{ goto restart; }
@@ -128,6 +132,11 @@ int main(){
  	}
  	printf("\n");
  }
+ /*output key file
+ FILE *f = fopen("key.puzzle", "wb");
+ fwrite(clientdata, sizeof(char), sizeof(clientdata), f);
+ fclose(f);
+ Still working on this*/
  
  
  //fill the rest of the field with random letters
@@ -149,6 +158,7 @@ int main(){
  }
  
  printf("End of program\n");
+ system("pause");
  //house keeping
  free(line);
  free(input);
